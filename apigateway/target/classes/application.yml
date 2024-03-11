@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: apigateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: usermsid
+          uri: lb://USERMS
+          # http://localhost:8080/dummy-userms/users -> http://userms(eureka)/users/1
+          predicates:
+            - Path=/dummy-userms/**
+          filters:
+            - RewritePath=/dummy-userms/(?<path>.*), /$\{path}
+        - id: clientms
+          uri: lb://clientms
+          # http://localhost:8080/dummy-clientms/client-users -> http://clientms(eureka)/client-users/1
+          predicates:
+            - Path=/dummy-clientms/**
+          filters:
+            - RewritePath=/dummy-clientms/(?<path>.*), /$\{path}
+        - id: studentms
+          uri: lb://studentms
+          # http://localhost:8080/dummy-studentms/students/1 -> http://studentms(eureka)/students/1
+          predicates:
+            - Path=/dummy-studentms/**
+          filters:
+            - RewritePath=/dummy-studentms/(?<path>.*), /$\{path}
+        - id: feesms
+          uri: lb://feesms
+          # http://localhost:8080/dummy-feesms/fees/1 -> http://feesms(eureka)/dummy-feesms/fees/1
+          predicates:
+            - Path=/dummy-feesms/**
+          filters:
+            - RewritePath=/dummy-feesms/(?<path>.*), /$\{path}            
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
